@@ -1,23 +1,23 @@
 Category,Instrument,Timestamp,Price,1D abs,1D %,1W abs,1W %,1M abs,1M %,52W abs,52W %,YTD abs,YTD %,Error
 Currencies,EUR/USD,2026-08-26,1.1677,0.0008,0.07,0.0097,0.84,0.0282,2.47,0.0037,0.32,-0.0071,-0.6,
-Currencies,EUR/CNY,2026-08-26,7.8184,-0.026,-0.33,0.0127,0.16,0.1018,1.32,-0.5065,-6.08,-0.4007,-4.88,
-Currencies,EUR/CHF,2026-08-26,0.9377,0.0017,0.18,-0.0025,-0.26,0.0076,0.82,0.0023,0.24,0.0077,0.82,
-Currencies,EUR/RON,2026-08-26,5.2576,0.0105,0.2,0.0188,0.36,0.0399,0.76,0.2061,4.08,0.1726,3.39,
-Rates,3M Euribor,,,,,,,,,,,,,400 Client Error: Bad Request for url: https://data-api.ecb.europa.eu/service/data/FM/FM.B.U2.EUR.RT.MM.EURIBOR3MD_.HSTA?format=csvdata&startPeriod=2024-06-17
-Rates,EUR 1Y (AAA gov. proxy),,,,,,,,,,,,,400 Client Error: Bad Request for url: https://data-api.ecb.europa.eu/service/data/YC/YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_1Y?format=csvdata&startPeriod=2024-06-17
-Rates,EUR 5Y (AAA gov. proxy),,,,,,,,,,,,,400 Client Error: Bad Request for url: https://data-api.ecb.europa.eu/service/data/YC/YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_5Y?format=csvdata&startPeriod=2024-06-17
-Rates,EUR 10Y (AAA gov. proxy),,,,,,,,,,,,,400 Client Error: Bad Request for url: https://data-api.ecb.europa.eu/service/data/YC/YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y?format=csvdata&startPeriod=2024-06-17
-Rates,EUR 30Y (AAA gov. proxy),,,,,,,,,,,,,400 Client Error: Bad Request for url: https://data-api.ecb.europa.eu/service/data/YC/YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_30Y?format=csvdata&startPeriod=2024-06-17
+Currencies,EUR/CNY,2026-08-26,7.8183,-0.0261,-0.33,0.0126,0.16,0.1017,1.32,-0.5066,-6.09,-0.4008,-4.88,
+Currencies,EUR/CHF,2026-08-26,0.9378,0.0017,0.18,-0.0024,-0.26,0.0077,0.82,0.0023,0.25,0.0077,0.83,
+Currencies,EUR/RON,2026-08-26,5.257,0.0099,0.19,0.0182,0.35,0.0393,0.75,0.2055,4.07,0.172,3.38,
+Rates,3M Euribor,,,,,,,,,,,,,404 Client Error: Not Found for url: https://data-api.ecb.europa.eu/service/data/FM/B.U2.EUR.RT.MM.EURIBOR3MD_.HSTA?format=csvdata&startPeriod=2024-06-17
+Rates,EUR 1Y (AAA gov. proxy),2026-08-24,2.6792,0.0328,1.24,0.0565,2.16,0.0378,1.43,0.7695,40.29,0.6555,32.39,
+Rates,EUR 5Y (AAA gov. proxy),2026-08-24,2.938,0.0202,0.69,0.0571,1.98,0.0426,1.47,0.6517,28.5,0.4973,20.37,
+Rates,EUR 10Y (AAA gov. proxy),2026-08-24,3.2804,0.0094,0.29,0.0381,1.17,0.0734,2.29,0.4384,15.42,0.3323,11.27,
+Rates,EUR 30Y (AAA gov. proxy),2026-08-24,3.7265,0.0033,0.09,0.0202,0.54,0.1065,2.94,0.4264,12.92,0.2478,7.12,
 Rates,UST 2Y,2026-08-24,4.24,0.0,0.0,0.05,1.19,-0.09,-2.08,0.51,13.67,0.77,22.19,
 Rates,UST 10Y,2026-08-24,4.7,-0.04,-0.84,-0.02,-0.42,0.01,0.21,0.42,9.81,0.52,12.44,
 Rates,UST 30Y,2026-08-24,5.23,-0.04,-0.76,-0.08,-1.51,0.07,1.36,0.34,6.95,0.39,8.06,
 Equities,S&P 500,2026-08-25,7677.2798,24.4199,0.32,-14.48,-0.19,265.2998,3.58,1211.3398,18.73,831.7798,12.15,
 Equities,Nasdaq 100,2026-08-25,29209.2305,186.0508,0.64,-281.7305,-0.96,1080.8906,3.84,5683.9414,24.16,3959.3809,15.68,
-Equities,Euro Stoxx 50,2026-08-26,6460.27,4.6401,0.07,15.8101,0.25,178.0601,2.83,1067.2002,19.79,664.0498,11.46,
-Equities,DAX,2026-08-26,26239.8691,-26.2715,-0.1,148.5391,0.57,878.8398,3.47,2193.6582,9.12,1749.459,7.14,
-Equities,ATX,2026-08-26,6685.1899,12.9199,0.19,92.2798,1.4,330.8999,5.21,2032.3198,43.68,1358.8599,25.51,
-Commodities,Brent Crude,2026-08-26,84.93,-3.65,-4.12,-6.69,-7.3,-3.43,-3.88,16.88,24.81,24.08,39.57,
-Commodities,WTI Crude,2026-08-26,79.88,-2.48,-3.01,-5.95,-6.93,-2.73,-3.3,15.73,24.52,22.46,39.12,
+Equities,Euro Stoxx 50,2026-08-26,6466.4902,10.8604,0.17,22.0303,0.34,184.2803,2.93,1073.4204,19.9,670.27,11.56,
+Equities,DAX,2026-08-26,26260.7207,-5.4199,-0.02,169.3906,0.65,899.6914,3.55,2214.5098,9.21,1770.3105,7.23,
+Equities,ATX,2026-08-26,6692.1299,19.8599,0.3,99.2197,1.5,337.8398,5.32,2039.2598,43.83,1365.7998,25.64,
+Commodities,Brent Crude,2026-08-26,84.96,-3.62,-4.09,-6.66,-7.27,-3.4,-3.85,16.91,24.85,24.11,39.62,
+Commodities,WTI Crude,2026-08-26,79.96,-2.4,-2.91,-5.87,-6.84,-2.65,-3.21,15.81,24.65,22.54,39.25,
 Commodities,Dutch TTF Nat Gas,2026-08-26,63.1,-3.488,-5.24,-0.281,-0.44,4.847,8.32,30.549,93.85,34.939,124.07,
 Commodities,"AT Power (day-ahead, EUR/MWh)",2026-08-26,178.0557,,,,,,,,,,,
 Commodities,Gold,2026-08-26,4684.7998,46.6997,1.01,195.3999,4.35,610.2998,14.98,1280.1997,37.6,359.1997,8.3,
