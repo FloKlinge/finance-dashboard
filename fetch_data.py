@@ -46,7 +46,7 @@ INSTRUMENTS = {
     "Rates": [
         # NOTE: verify this Euribor series key still resolves - EMMI/ECB
         # occasionally restructure these. See README for how to check.
-        ("3M Euribor", "ecb", "FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA"),
+      ("3M Euribor", "bundesbank", "BBIG1.D.D0.EUR.MMKT.EURIBOR.M03.BID._Z"),
         ("EUR 1Y (AAA gov. proxy)", "ecb", "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_1Y"),
         ("EUR 5Y (AAA gov. proxy)", "ecb", "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_5Y"),
         ("EUR 10Y (AAA gov. proxy)", "ecb", "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y"),
@@ -111,6 +111,21 @@ def fetch_ecb(series_key: str) -> pd.Series:
     s = df.set_index("TIME_PERIOD")["OBS_VALUE"]
     return s.sort_index()
 
+def fetch_bundesbank(series_key: str) -> pd.Series:
+    parts = series_key.split(".")
+    flow = parts[0]
+    key = ".".join(parts[1:])  # drop the leading dataflow - it's already in the path
+    url = f"https://api.statistiken.bundesbank.de/rest/data/{flow}/{key}"
+    params = {"startPeriod": (TODAY - dt.timedelta(days=800)).isoformat()}
+    headers = {"Accept": "text/csv"}
+    r = requests.get(url, params=params, headers=headers, timeout=30)
+    r.raise_for_status()
+    df = pd.read_csv(io.StringIO(r.text))
+    df = df[["TIME_PERIOD", "OBS_VALUE"]].dropna()
+    df["TIME_PERIOD"] = pd.to_datetime(df["TIME_PERIOD"])
+    s = df.set_index("TIME_PERIOD")["OBS_VALUE"]
+    return s.sort_index()
+  
 
 def fetch_fred(series_id: str) -> pd.Series:
     url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}"
@@ -141,6 +156,7 @@ def fetch_awattar(zone: str) -> pd.Series:
 FETCHERS = {
     "yfinance": fetch_yfinance,
     "ecb": fetch_ecb,
+    "bundesbank": fetch_bundesbank,
     "fred": fetch_fred,
     "awattar": fetch_awattar,
 }
