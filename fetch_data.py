@@ -46,7 +46,7 @@ INSTRUMENTS = {
     "Rates": [
         # NOTE: verify this Euribor series key still resolves - EMMI/ECB
         # occasionally restructure these. See README for how to check.
-        ("3M Euribor", "ecb", "FM.B.U2.EUR.RT.MM.EURIBOR3MD_.HSTA"),
+        ("3M Euribor", "ecb", "FM.M.U2.EUR.RT.MM.EURIBOR3MD_.HSTA"),
         ("EUR 1Y (AAA gov. proxy)", "ecb", "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_1Y"),
         ("EUR 5Y (AAA gov. proxy)", "ecb", "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_5Y"),
         ("EUR 10Y (AAA gov. proxy)", "ecb", "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y"),
