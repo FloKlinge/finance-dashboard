@@ -273,7 +273,12 @@ def render_html(sections: dict, out_path: str = "output/index.html") -> None:
             if c not in df.columns:
                 df[c] = None
 
-        header_html = "<tr>" + "".join(f"<th>{c}</th>" for c in COLS_ORDER) + "</tr>"
+        abs_format = ABS_FORMAT_BY_CATEGORY.get(category, "4dec")
+        header_labels = [
+            (c + " (bps)") if (c.endswith("abs") and abs_format == "bps") else c
+            for c in COLS_ORDER
+        ]
+        header_html = "<tr>" + "".join(f"<th>{c}</th>" for c in header_labels) + "</tr>"
         rows_html = []
         for _, r in df.iterrows():
             if isinstance(r.get("Error"), str):
@@ -281,7 +286,7 @@ def render_html(sections: dict, out_path: str = "output/index.html") -> None:
             else:
                 cells = [f"<td>{r['Instrument']}</td>"]
                 for c in COLS_ORDER[1:]:
-                    cells.append(_fmt_cell(c, r.get(c)))
+                    cells.append(_fmt_cell(c, r.get(c), abs_format))
             rows_html.append("<tr>" + "".join(cells) + "</tr>")
 
         html_parts.append(f"<table>{header_html}{''.join(rows_html)}</table>")
