@@ -120,7 +120,7 @@ def fetch_bundesbank(series_key: str) -> pd.Series:
     headers = {"Accept": "text/csv"}
     r = requests.get(url, params=params, headers=headers, timeout=30)
     r.raise_for_status()
-    df = pd.read_csv(io.StringIO(r.text))
+    df = pd.read_csv(io.StringIO(r.text), sep=None, engine="python")
 
     # Column names can vary by dataflow/response shape - detect flexibly
     # instead of assuming exact ECB-style names.
