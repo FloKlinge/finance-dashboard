@@ -2,7 +2,7 @@ name: Daily Market Dashboard
 
 on:
   schedule:
-    - cron: "0 6 * * 1-5"   # 06:00 UTC, Monday-Friday
+    - cron: "0 5 * * 1-5"   # 06:00 UTC, Monday-Friday
   workflow_dispatch: {}       # lets you trigger it manually from the Actions tab
 
 permissions:
