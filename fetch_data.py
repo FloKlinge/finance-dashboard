@@ -95,8 +95,10 @@ def fetch_yfinance(ticker: str) -> pd.Series:
 
 
 def fetch_ecb(series_key: str) -> pd.Series:
-    flow = series_key.split(".")[0]
-    url = f"https://data-api.ecb.europa.eu/service/data/{flow}/{series_key}"
+    parts = series_key.split(".")
+    flow = parts[0]
+    key = ".".join(parts[1:])  # drop the leading dataflow - it's already in the path
+    url = f"https://data-api.ecb.europa.eu/service/data/{flow}/{key}"
     params = {
         "format": "csvdata",
         "startPeriod": (TODAY - dt.timedelta(days=800)).isoformat(),
