@@ -219,7 +219,18 @@ COLS_ORDER = [
 ]
 
 
-def _fmt_cell(col: str, val) -> str:
+# How to render the "abs" (absolute change) columns, per category.
+# "bps"   -> value is in percentage points; display as basis points (x100), 1 decimal
+# "1dec"  -> display the raw value with 1 decimal
+# "4dec"  -> display the raw value with 4 decimals (default, e.g. FX rates)
+ABS_FORMAT_BY_CATEGORY = {
+    "Rates": "bps",
+    "Equities": "1dec",
+    "Commodities": "1dec",
+}
+
+
+def _fmt_cell(col: str, val, abs_format: str = "4dec") -> str:
     if val is None or (isinstance(val, float) and pd.isna(val)):
         return "<td>-</td>"
     if col.endswith("%"):
@@ -227,6 +238,10 @@ def _fmt_cell(col: str, val) -> str:
         return f"<td class='{cls}'>{val:+.2f}%</td>"
     if col.endswith("abs"):
         cls = "pos" if val >= 0 else "neg"
+        if abs_format == "bps":
+            return f"<td class='{cls}'>{val * 100:+.1f}bps</td>"
+        if abs_format == "1dec":
+            return f"<td class='{cls}'>{val:+.1f}</td>"
         return f"<td class='{cls}'>{val:+.4f}</td>"
     return f"<td>{val}</td>"
 
