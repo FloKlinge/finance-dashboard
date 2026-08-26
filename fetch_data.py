@@ -285,8 +285,16 @@ def render_html(sections: dict, out_path: str = "output/index.html") -> None:
         "<style>",
         "body{font-family:Arial,sans-serif;margin:2em;background:#fafafa;}",
         "h2{margin-top:2em;}",
-        "table{border-collapse:collapse;width:100%;margin-bottom:1em;background:#fff;}",
-        "th,td{border:1px solid #ddd;padding:6px 10px;text-align:right;font-size:0.9em;}",
+        "table{border-collapse:collapse;width:100%;margin-bottom:1em;background:#fff;table-layout:fixed;}",
+        "th,td{border:1px solid #ddd;padding:6px 10px;text-align:right;font-size:0.9em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}",
+        "th:nth-child(1),td:nth-child(1){width:17%;}",
+        "th:nth-child(2),td:nth-child(2){width:9%;}",
+        "th:nth-child(3),td:nth-child(3){width:8%;}",
+        "th:nth-child(4),td:nth-child(4),th:nth-child(5),td:nth-child(5),"
+        "th:nth-child(6),td:nth-child(6),th:nth-child(7),td:nth-child(7),"
+        "th:nth-child(8),td:nth-child(8),th:nth-child(9),td:nth-child(9),"
+        "th:nth-child(10),td:nth-child(10),th:nth-child(11),td:nth-child(11),"
+        "th:nth-child(12),td:nth-child(12),th:nth-child(13),td:nth-child(13){width:6.6%;}",
         "th{background:#333;color:#fff;}",
         "td:first-child,th:first-child{text-align:left;}",
         ".pos{color:#0a7d28;} .neg{color:#c0392b;}",
