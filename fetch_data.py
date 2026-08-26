@@ -290,6 +290,13 @@ def render_html(sections: dict, out_path: str = "output/index.html") -> None:
         "th{background:#333;color:#fff;}",
         "td:first-child,th:first-child{text-align:left;}",
         ".pos{color:#0a7d28;} .neg{color:#c0392b;}",
+        # Thicker divider at the start of each timeframe group (1D/1W/1M/52W/YTD)
+        "th:nth-child(4),td:nth-child(4),th:nth-child(6),td:nth-child(6),"
+        "th:nth-child(8),td:nth-child(8),th:nth-child(10),td:nth-child(10),"
+        "th:nth-child(12),td:nth-child(12){border-left:2px solid #999;}",
+        # Subtle alternating band per timeframe group, so % and abs visually pair up
+        "td:nth-child(4),td:nth-child(5),td:nth-child(8),td:nth-child(9),"
+        "td:nth-child(12),td:nth-child(13){background-color:#f2f2f2;}",
         "</style></head><body>",
         "<h1>Daily Market Dashboard</h1>",
         f"<p>Generated: {dt.datetime.now().strftime('%Y-%m-%d %H:%M')} UTC</p>",
