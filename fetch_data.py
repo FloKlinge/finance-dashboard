@@ -155,17 +155,31 @@ def fetch_fred(series_id: str) -> pd.Series:
     return df.set_index("date")["value"].sort_index()
 
 
-def fetch_awattar(zone: str) -> pd.Series:
-    # aWATTar publishes day-ahead spot prices for AT/DE with no auth needed,
-    # but only a short rolling history (recent past + next-day prices) -
-    # so 1M/52W/YTD comparisons for this instrument will often show "-".
-    base = "https://api.awattar.at/v1/marketdata" if zone == "AT" else "https://api.awattar.de/v1/marketdata"
-    r = requests.get(base, timeout=30)
+def fetch_energycharts(zone: str) -> pd.Series:
+    # Fraunhofer ISE's Energy-Charts API - no auth needed, real historical
+    # depth via explicit start/end dates (unlike aWATTar's few-day window).
+    url = "https://api.energy-charts.info/price"
+    params = {
+        "bzn": zone,
+        "start": (TODAY - dt.timedelta(days=800)).isoformat(),
+        "end": TODAY.isoformat(),
+    }
+    r = requests.get(url, params=params, timeout=30)
     r.raise_for_status()
-    data = r.json()["data"]
-    df = pd.DataFrame(data)
-    df["date"] = pd.to_datetime(df["start_timestamp"], unit="ms").dt.normalize()
-    daily = df.groupby("date")["marketprice"].mean()
+    data = r.json()
+
+    # Detect the relevant keys flexibly rather than assuming exact names.
+    ts_key = next((k for k in data if "unix" in k.lower() or "time" in k.lower()), None)
+    price_key = next((k for k in data if "price" in k.lower()), None)
+    if ts_key is None or price_key is None:
+        raise ValueError(
+            f"Unrecognized Energy-Charts response shape for zone {zone}. "
+            f"Keys found: {list(data.keys())}"
+        )
+
+    ts = pd.to_datetime(data[ts_key], unit="s")
+    prices = pd.to_numeric(pd.Series(data[price_key], index=ts), errors="coerce").dropna()
+    daily = prices.groupby(prices.index.normalize()).mean()
     return daily.sort_index()
 
 
@@ -174,7 +188,8 @@ FETCHERS = {
     "ecb": fetch_ecb,
     "bundesbank": fetch_bundesbank,
     "fred": fetch_fred,
-    "awattar": fetch_awattar,
+    ("AT Power (day-ahead, EUR/MWh)", "energycharts", "AT"),
+    ("DE Power (day-ahead, EUR/MWh)", "energycharts", "DE-LU"),
 }
 
 # ---------------------------------------------------------------------------
