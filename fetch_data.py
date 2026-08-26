@@ -134,6 +134,11 @@ def fetch_bundesbank(series_key: str) -> pd.Series:
 
     df = df[[time_col, value_col]].dropna()
     df[time_col] = pd.to_datetime(df[time_col])
+    df[value_col] = pd.to_numeric(
+        df[value_col].astype(str).str.strip().str.replace(",", ".", regex=False),
+        errors="coerce",
+    )
+    df = df.dropna(subset=[value_col])
     s = df.set_index(time_col)[value_col]
     return s.sort_index()
   
