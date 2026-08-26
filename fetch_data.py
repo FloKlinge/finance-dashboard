@@ -65,10 +65,9 @@ INSTRUMENTS = {
     "Commodities": [
         ("Brent Crude", "yfinance", "BZ=F"),
         ("WTI Crude", "yfinance", "CL=F"),
-        # NOTE: verify this ticker on finance.yahoo.com/lookup - Yahoo
-        # occasionally renames/delists specific futures contracts.
         ("Dutch TTF Nat Gas", "yfinance", "TTF=F"),
-        ("AT Power (day-ahead, EUR/MWh)", "awattar", "AT"),
+        ("AT Power (day-ahead, EUR/MWh)", "energycharts", "AT"),
+        ("DE Power (day-ahead, EUR/MWh)", "energycharts", "DE-LU"),
         ("Gold", "yfinance", "GC=F"),
     ],
 }
@@ -188,8 +187,7 @@ FETCHERS = {
     "ecb": fetch_ecb,
     "bundesbank": fetch_bundesbank,
     "fred": fetch_fred,
-    ("AT Power (day-ahead, EUR/MWh)", "energycharts", "AT"),
-    ("DE Power (day-ahead, EUR/MWh)", "energycharts", "DE-LU"),
+    "energycharts": fetch_energycharts,
 }
 
 # ---------------------------------------------------------------------------
