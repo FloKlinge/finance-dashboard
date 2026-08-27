@@ -43,21 +43,18 @@ INSTRUMENTS = {
         ("EUR/CHF", "yfinance", "EURCHF=X"),
         ("EUR/RON", "yfinance", "EURRON=X"),
     ],
-    "Rates": [
-        # NOTE: verify this Euribor series key still resolves - EMMI/ECB
-        # occasionally restructure these. See README for how to check.
-      ("3M Euribor", "bundesbank", "BBIG1.D.D0.EUR.MMKT.EURIBOR.M03.BID._Z"),
-        ("EUR 1Y (AAA gov. proxy)", "ecb", "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_1Y"),
-        ("EUR 5Y (AAA gov. proxy)", "ecb", "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_5Y"),
-        ("EUR 10Y (AAA gov. proxy)", "ecb", "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_10Y"),
-        ("EUR 30Y (AAA gov. proxy)", "ecb", "YC.B.U2.EUR.4F.G_N_A.SV_C_YM.SR_30Y"),
-        ("UST 2Y", "fred", "DGS2"),
-        ("UST 10Y", "fred", "DGS10"),
-        ("UST 30Y", "fred", "DGS30"),
+        ("3M Euribor", "bundesbank", "BBIG1.D.D0.EUR.MMKT.EURIBOR.M03.BID._Z"),
+        ("EUR 2Y (DE Bund)", "bundesbank", "BBSSY.D.REN.EUR.A610.000000WT0202.A"),
+        ("EUR 5Y (DE Bund)", "bundesbank", "BBSSY.D.REN.EUR.A620.000000WT0505.A"),
+        ("EUR 10Y (DE Bund)", "bundesbank", "BBSSY.D.REN.EUR.A630.000000WT1010.A"),
+        ("EUR 30Y (DE Bund)", "bundesbank", "BBSSY.D.REN.EUR.A640.000000WT3030.A"),
+        ("UST 2Y", "treasury", "2 Yr"),
+        ("UST 10Y", "treasury", "10 Yr"),
+        ("UST 30Y", "treasury", "30 Yr"),
     ],
     "Equities": [
         ("S&P 500", "yfinance", "^GSPC"),
-        ("Nasdaq 100", "yfinance", "^NDX"),
+        ("Nasdaq Composite", "yfinance", "^IXIC"),
         ("Euro Stoxx 50", "yfinance", "^STOXX50E"),
         ("DAX", "yfinance", "^GDAXI"),
         ("ATX", "yfinance", "^ATX"),
@@ -85,13 +82,17 @@ LOOKBACKS = {
 # ---------------------------------------------------------------------------
 
 def fetch_yfinance(ticker: str) -> pd.Series:
-    hist = yf.Ticker(ticker).history(period="2y", interval="1d", auto_adjust=False)
+    # Explicit start/end (rather than period="2y") avoids a known yfinance/
+    # Yahoo quirk where period-based ranges can lag the most recent close
+    # by a day compared to explicit dates.
+    start = (TODAY - dt.timedelta(days=800)).isoformat()
+    end = (TODAY + dt.timedelta(days=1)).isoformat()
+    hist = yf.Ticker(ticker).history(start=start, end=end, interval="1d", auto_adjust=False)
     if hist.empty:
         raise ValueError(f"No data returned for {ticker}")
     s = hist["Close"]
     s.index = pd.to_datetime(s.index).tz_localize(None).normalize()
     return s.dropna()
-
 
 def fetch_ecb(series_key: str) -> pd.Series:
     parts = series_key.split(".")
@@ -110,36 +111,39 @@ def fetch_ecb(series_key: str) -> pd.Series:
     s = df.set_index("TIME_PERIOD")["OBS_VALUE"]
     return s.sort_index()
 
-def fetch_bundesbank(series_key: str) -> pd.Series:
-    parts = series_key.split(".")
-    flow = parts[0]
-    key = ".".join(parts[1:])  # drop the leading dataflow - it's already in the path
-    url = f"https://api.statistiken.bundesbank.de/rest/data/{flow}/{key}"
-    params = {"startPeriod": (TODAY - dt.timedelta(days=800)).isoformat()}
-    headers = {"Accept": "text/csv"}
-    r = requests.get(url, params=params, headers=headers, timeout=30)
-    r.raise_for_status()
-    df = pd.read_csv(io.StringIO(r.text), sep=None, engine="python")
+def fetch_treasury_yield(tenor_col: str) -> pd.Series:
+    # U.S. Treasury's own daily par yield curve export - published same-day
+    # (typically by late afternoon US time), unlike FRED's mirror which can
+    # lag by a day or more. Pull current + previous year for enough history.
+    frames = []
+    for yr in sorted({TODAY.year, TODAY.year - 1}):
+        url = (
+            f"https://home.treasury.gov/resource-center/data-chart-center/"
+            f"interest-rates/daily-treasury-rates.csv/{yr}/all"
+        )
+        params = {
+            "type": "daily_treasury_yield_curve",
+            "field_tdr_date_value": yr,
+            "page": "",
+            "_format": "csv",
+        }
+        r = requests.get(url, params=params, timeout=30)
+        r.raise_for_status()
+        frames.append(pd.read_csv(io.StringIO(r.text)))
+    df = pd.concat(frames, ignore_index=True)
 
-    # Column names can vary by dataflow/response shape - detect flexibly
-    # instead of assuming exact ECB-style names.
-    time_col = next((c for c in df.columns if "TIME" in c.upper()), None)
-    value_col = next((c for c in df.columns if "OBS_VALUE" in c.upper() or c.upper() == "VALUE"), None)
-    if time_col is None or value_col is None:
+    date_col = next((c for c in df.columns if "date" in c.lower()), None)
+    value_col = next((c for c in df.columns if c.strip().lower() == tenor_col.lower()), None)
+    if date_col is None or value_col is None:
         raise ValueError(
-            f"Unrecognized Bundesbank CSV shape for {series_key}. "
+            f"Unrecognized Treasury CSV shape for tenor '{tenor_col}'. "
             f"Columns found: {list(df.columns)}"
         )
 
-    df = df[[time_col, value_col]].dropna()
-    df[time_col] = pd.to_datetime(df[time_col])
-    df[value_col] = pd.to_numeric(
-        df[value_col].astype(str).str.strip().str.replace(",", ".", regex=False),
-        errors="coerce",
-    )
-    df = df.dropna(subset=[value_col])
-    s = df.set_index(time_col)[value_col]
-    return s.sort_index()
+    df[date_col] = pd.to_datetime(df[date_col], format="%m/%d/%Y")
+    s = pd.to_numeric(df[value_col], errors="coerce")
+    s.index = df[date_col]
+    return s.dropna().sort_index()
   
 
 def fetch_fred(series_id: str) -> pd.Series:
@@ -187,6 +191,7 @@ FETCHERS = {
     "ecb": fetch_ecb,
     "bundesbank": fetch_bundesbank,
     "fred": fetch_fred,
+    "treasury": fetch_treasury_yield,
     "energycharts": fetch_energycharts,
 }
 
