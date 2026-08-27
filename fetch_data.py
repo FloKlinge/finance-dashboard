@@ -112,6 +112,37 @@ def fetch_ecb(series_key: str) -> pd.Series:
     s = df.set_index("TIME_PERIOD")["OBS_VALUE"]
     return s.sort_index()
 
+def fetch_bundesbank(series_key: str) -> pd.Series:
+    parts = series_key.split(".")
+    flow = parts[0]
+    key = ".".join(parts[1:])  # drop the leading dataflow - it's already in the path
+    url = f"https://api.statistiken.bundesbank.de/rest/data/{flow}/{key}"
+    params = {"startPeriod": (TODAY - dt.timedelta(days=800)).isoformat()}
+    headers = {"Accept": "text/csv"}
+    r = requests.get(url, params=params, headers=headers, timeout=30)
+    r.raise_for_status()
+    df = pd.read_csv(io.StringIO(r.text), sep=None, engine="python")
+
+    # Column names can vary by dataflow/response shape - detect flexibly
+    # instead of assuming exact ECB-style names.
+    time_col = next((c for c in df.columns if "TIME" in c.upper()), None)
+    value_col = next((c for c in df.columns if "OBS_VALUE" in c.upper() or c.upper() == "VALUE"), None)
+    if time_col is None or value_col is None:
+        raise ValueError(
+            f"Unrecognized Bundesbank CSV shape for {series_key}. "
+            f"Columns found: {list(df.columns)}"
+        )
+
+    df = df[[time_col, value_col]].dropna()
+    df[time_col] = pd.to_datetime(df[time_col])
+    df[value_col] = pd.to_numeric(
+        df[value_col].astype(str).str.strip().str.replace(",", ".", regex=False),
+        errors="coerce",
+    )
+    df = df.dropna(subset=[value_col])
+    s = df.set_index(time_col)[value_col]
+    return s.sort_index()
+  
 def fetch_treasury_yield(tenor_col: str) -> pd.Series:
     # U.S. Treasury's own daily par yield curve export - published same-day
     # (typically by late afternoon US time), unlike FRED's mirror which can
