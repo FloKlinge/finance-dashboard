@@ -43,6 +43,7 @@ INSTRUMENTS = {
         ("EUR/CHF", "yfinance", "EURCHF=X"),
         ("EUR/RON", "yfinance", "EURRON=X"),
     ],
+  "Rates":[
         ("3M Euribor", "bundesbank", "BBIG1.D.D0.EUR.MMKT.EURIBOR.M03.BID._Z"),
         ("EUR 2Y (DE Bund)", "bundesbank", "BBSSY.D.REN.EUR.A610.000000WT0202.A"),
         ("EUR 5Y (DE Bund)", "bundesbank", "BBSSY.D.REN.EUR.A620.000000WT0505.A"),
