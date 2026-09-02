@@ -2,9 +2,10 @@ name: Daily Market Dashboard
 
 on:
   schedule:
-    - cron: "17 5 * * 1-5"   # 05:17 UTC, Monday-Friday
+    - cron: "17 4 * * 1-5"   # 05:17 UTC, Monday-Friday
+    - cron: "47 5 * * 1-5"   # 05:47 UTC backup - in case the first trigger gets
+                              # dropped due to GitHub's documented high-load behavior
   workflow_dispatch: {}       # lets you trigger it manually from the Actions tab
-
 permissions:
   contents: write
 
